@@ -3,120 +3,95 @@ package com.github.tvbox.osc.base;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 
-import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.AppUtils;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.callback.EmptyCallback;
 import com.github.tvbox.osc.callback.LoadingCallback;
-import com.github.tvbox.osc.event.RefreshEvent;
-import com.github.tvbox.osc.ui.activity.DetailActivity;
 import com.github.tvbox.osc.util.AppManager;
-import com.github.tvbox.osc.util.HawkConfig;
-import com.github.tvbox.osc.util.Utils;
-import com.gyf.immersionbar.ImmersionBar;
-import com.hjq.bar.OnTitleBarListener;
-import com.hjq.bar.TitleBar;
 import com.kingja.loadsir.callback.Callback;
 import com.kingja.loadsir.core.LoadService;
 import com.kingja.loadsir.core.LoadSir;
-import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.impl.LoadingPopupView;
-import com.orhanobut.hawk.Hawk;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.internal.CustomAdapt;
+import xyz.doikki.videoplayer.util.CutoutUtil;
 
-public abstract class BaseActivity extends AppCompatActivity implements CustomAdapt, OnTitleBarListener {
+/**
+ * @author pj567
+ * @date :2020/12/17
+ * @description:
+ */
+public abstract class BaseActivity extends AppCompatActivity implements CustomAdapt {
     protected Context mContext;
     private LoadService mLoadService;
 
-    private ImmersionBar mImmersionBar;
-    private TitleBar mTitleBar;
-    private LoadingPopupView loadingPopup;
+    private static float screenRatio = -100.0f;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
-
-        if (getLayoutResID()==-1){
-            initVb();
-        }else {
-            setContentView(getLayoutResID());
-        }
-        mContext = this;
-        AppManager.getInstance().addActivity(this);
-        initStatusBar();
-        initTitleBar();
-        init();
-        if (!App.getInstance().isNormalStart){
-            AppUtils.relaunchApp(true);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refresh(RefreshEvent event) {
-
-    }
-
-
-    private void initStatusBar(){
-        ImmersionBar.with(this)
-                .statusBarDarkFont(!Utils.isDarkTheme())
-                .titleBar(findTitleBar(getWindow().getDecorView().findViewById(android.R.id.content)))
-                .navigationBarColor(R.color.white)
-                .init();
-    }
-
-    private void initTitleBar(){
-        if (getTitleBar() != null) {
-            getTitleBar().setOnTitleBarListener(this);
-        }
-    }
-
-    /**
-     * 递归获取 ViewGroup 中的 TitleBar 对象
-     */
-    private TitleBar findTitleBar(ViewGroup group) {
-        for (int i = 0; i < group.getChildCount(); i++) {
-            View view = group.getChildAt(i);
-            if ((view instanceof TitleBar)) {
-                return (TitleBar) view;
-            } else if (view instanceof ViewGroup) {
-                TitleBar titleBar = findTitleBar((ViewGroup) view);
-                if (titleBar != null) {
-                    return titleBar;
-                }
+        try {
+            if (screenRatio < 0) {
+                DisplayMetrics dm = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(dm);
+                int screenWidth = dm.widthPixels;
+                int screenHeight = dm.heightPixels;
+                screenRatio = (float) Math.max(screenWidth, screenHeight) / (float) Math.min(screenWidth, screenHeight);
             }
+        } catch (Throwable th) {
+            th.printStackTrace();
         }
-        return null;
+        super.onCreate(savedInstanceState);
+        setContentView(getLayoutResID());
+        mContext = this;
+        CutoutUtil.adaptCutoutAboveAndroidP(mContext, true);//设置刘海
+        AppManager.getInstance().addActivity(this);
+        init();
     }
 
-    private TitleBar getTitleBar() {
-        if (mTitleBar == null) {
-            mTitleBar = findTitleBar(getWindow().getDecorView().findViewById(android.R.id.content));
-        }
-        return mTitleBar;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSysBar();
+        changeWallpaper(false);
     }
 
+    public void hideSysBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            int uiOptions = getWindow().getDecorView().getSystemUiVisibility();
+            uiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            uiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            uiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+        }
+    }
+
+    @Override
+    public Resources getResources() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            AutoSizeCompat.autoConvertDensityOfCustomAdapt(super.getResources(), this);
+        }
+        return super.getResources();
+    }
 
     public boolean hasPermission(String permission) {
         boolean has = true;
@@ -131,10 +106,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     protected abstract int getLayoutResID();
 
     protected abstract void init();
-
-    protected void initVb() {
-
-    }
 
     protected void setLoadSir(View view) {
         if (mLoadService == null) {
@@ -167,7 +138,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         AppManager.getInstance().finishActivity(this);
     }
 
@@ -177,10 +147,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     }
 
     public void jumpActivity(Class<? extends BaseActivity> clazz, Bundle bundle) {
-        if (DetailActivity.class.isAssignableFrom(clazz) && Hawk.get(HawkConfig.BACKGROUND_PLAY_TYPE, 0) == 2) {
-            //1.重新打开singleTask的页面(关闭小窗) 2.关闭画中画，重进detail再开启画中画会闪退
-            ActivityUtils.finishActivity(DetailActivity.class);
-        }
         Intent intent = new Intent(mContext, clazz);
         intent.putExtras(bundle);
         startActivity(intent);
@@ -204,40 +170,53 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     @Override
     public float getSizeInDp() {
-        return isBaseOnWidth() ? 360 : 720;
+        return isBaseOnWidth() ? 1280 : 720;
     }
 
     @Override
     public boolean isBaseOnWidth() {
-        return true;
+        return !(screenRatio >= 4.0f);
     }
 
-    @Override
-    public void onLeftClick(TitleBar titleBar) {
-        finish();
-    }
+    protected static BitmapDrawable globalWp = null;
 
-
-    /**
-     * 显示加载框
-     */
-    public void showLoadingDialog() {
-        if (loadingPopup == null) {
-            loadingPopup = new XPopup.Builder(this)
-                    .isLightNavigationBar(true)
-                    .hasShadowBg(false)
-                    .asLoading();
+    public void changeWallpaper(boolean force) {
+        if (!force && globalWp != null)
+            getWindow().setBackgroundDrawable(globalWp);
+        try {
+            File wp = new File(getFilesDir().getAbsolutePath() + "/wp");
+            if (wp.exists()) {
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(wp.getAbsolutePath(), opts);
+                // 从Options中获取图片的分辨率
+                int imageHeight = opts.outHeight;
+                int imageWidth = opts.outWidth;
+                int picHeight = 720;
+                int picWidth = 1080;
+                int scaleX = imageWidth / picWidth;
+                int scaleY = imageHeight / picHeight;
+                int scale = 1;
+                if (scaleX > scaleY && scaleY >= 1) {
+                    scale = scaleX;
+                }
+                if (scaleX < scaleY && scaleX >= 1) {
+                    scale = scaleY;
+                }
+                opts.inJustDecodeBounds = false;
+                // 采样率
+                opts.inSampleSize = scale;
+                globalWp = new BitmapDrawable(BitmapFactory.decodeFile(wp.getAbsolutePath(), opts));
+            } else {
+                globalWp = null;
+            }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            globalWp = null;
         }
-        loadingPopup.show();
+        if (globalWp != null)
+            getWindow().setBackgroundDrawable(globalWp);
+        else
+            getWindow().setBackgroundDrawableResource(R.drawable.app_bg);
     }
-
-    /**
-     * 隐藏加载框
-     */
-    public void dismissLoadingDialog() {
-        if (loadingPopup != null && loadingPopup.isShow()) {
-            loadingPopup.dismiss();
-        }
-    }
-
 }

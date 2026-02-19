@@ -2,7 +2,7 @@ package com.github.tvbox.osc.util;
 
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.SourceBean;
-import com.github.tvbox.osc.ui.activity.FastSearchActivity;
+import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class SearchHelper {
             if (mCheckSourcesForApi == null) mCheckSourcesForApi = new HashMap<>();
             mCheckSourcesForApi.put(api, mCheckSources);
         }
-        FastSearchActivity.Companion.setCheckedSourcesForSearch(mCheckSources);
+        SearchActivity.setCheckedSourcesForSearch(mCheckSources);
         Hawk.put(HawkConfig.SOURCES_FOR_SEARCH, mCheckSourcesForApi);
     }
 

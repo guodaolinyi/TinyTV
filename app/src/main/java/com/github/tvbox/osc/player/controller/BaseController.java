@@ -33,7 +33,7 @@ public abstract class BaseController extends BaseVideoController implements Gest
     private boolean mIsGestureEnabled = true;
     private int mStreamVolume;
     private float mBrightness;
-    private int mSeekPosition = -1;
+    private int mSeekPosition;
     private boolean mFirstTouch;
     private boolean mChangePosition;
     private boolean mChangeBrightness;
@@ -91,7 +91,9 @@ public abstract class BaseController extends BaseVideoController implements Gest
     }
 
     private TextView mSlideInfo;
-    private View mLoading;
+    private ProgressBar mLoading;
+    private ViewGroup mPauseRoot;
+    private TextView mPauseTime;
 
     @Override
     protected void initView() {
@@ -101,11 +103,14 @@ public abstract class BaseController extends BaseVideoController implements Gest
         setOnTouchListener(this);
         mSlideInfo = findViewWithTag("vod_control_slide_info");
         mLoading = findViewWithTag("vod_control_loading");
+        mPauseRoot = findViewWithTag("vod_control_pause");
+        mPauseTime = findViewWithTag("vod_control_pause_t");
     }
 
     @Override
     protected void setProgress(int duration, int position) {
         super.setProgress(duration, position);
+        mPauseTime.setText(PlayerUtils.stringForTime(position) + " / " + PlayerUtils.stringForTime(duration));
     }
 
     @Override
@@ -116,9 +121,11 @@ public abstract class BaseController extends BaseVideoController implements Gest
                 mLoading.setVisibility(GONE);
                 break;
             case VideoView.STATE_PLAYING:
+                mPauseRoot.setVisibility(GONE);
                 mLoading.setVisibility(GONE);
                 break;
             case VideoView.STATE_PAUSED:
+                mPauseRoot.setVisibility(VISIBLE);
                 mLoading.setVisibility(GONE);
                 break;
             case VideoView.STATE_PREPARED:
@@ -132,6 +139,7 @@ public abstract class BaseController extends BaseVideoController implements Gest
                 break;
             case VideoView.STATE_PLAYBACK_COMPLETED:
                 mLoading.setVisibility(GONE);
+                mPauseRoot.setVisibility(GONE);
                 break;
         }
     }
@@ -370,14 +378,14 @@ public abstract class BaseController extends BaseVideoController implements Gest
             switch (action) {
                 case MotionEvent.ACTION_UP:
                     stopSlide();
-                    if (mSeekPosition >= 0) {
+                    if (mSeekPosition > 0) {
                         mControlWrapper.seekTo(mSeekPosition);
-                        mSeekPosition = -1;
+                        mSeekPosition = 0;
                     }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     stopSlide();
-                    mSeekPosition = -1;
+                    mSeekPosition = 0;
                     break;
             }
         }
