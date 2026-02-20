@@ -32,5 +32,5 @@
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/app_icon" />
+        android:src="@mipmap/ic_launcher" />
 </RelativeLayout>

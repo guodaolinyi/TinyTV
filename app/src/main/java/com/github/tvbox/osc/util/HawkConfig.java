@@ -7,11 +7,11 @@ package com.github.tvbox.osc.util;
  */
 public class HawkConfig {
     public static final String API_URL = "api_url";
-    public static final String LIVE_URL = "live_url";
     public static final String EPG_URL = "epg_url";
     public static final String SHOW_PREVIEW = "show_preview";
-    public static final String SUBSCRIPTIONS = "api_history";
+    public static final String API_HISTORY = "api_history";
     public static final String LIVE_HISTORY = "live_history";
+    public static final String LIVE_URL = "live_url";
     public static final String EPG_HISTORY = "epg_history";
     public static final String HOME_API = "home_api";
     public static final String DEFAULT_PARSE = "parse_default";
@@ -26,6 +26,7 @@ public class HawkConfig {
      * 0 豆瓣热播 1 数据源推荐 2 关闭主页
      */
     public static final String HOME_REC = "home_rec";
+    public static final String HOME_REC_STYLE = "home_rec_style";
     public static final String HISTORY_NUM = "history_num";
     public static final String LIVE_CHANNEL = "last_live_channel_name";
     public static final String LIVE_CHANNEL_REVERSE = "live_channel_reverse";
@@ -56,6 +57,8 @@ public class HawkConfig {
      * 广告过滤
      */
     public static final String VIDEO_PURIFY = "video_purify";
+    public static final String PARSE_WEBVIEW = "parse_webview"; // true 系统 false xwalk
+    public static final String SEARCH_VIEW = "search_view"; // 0 列表 1 缩略图
     /**
      * 长按的倍速播放设置
      */

@@ -56,12 +56,15 @@ android {
     productFlavors {
         mobi {
             dimension "mode"
+            applicationIdSuffix '.mobi'
         }
         tv {
             dimension "mode"
+            applicationIdSuffix '.tv'
         }
         pad {
             dimension "mode"
+            applicationIdSuffix '.pad'
         }
     }
     sourceSets {

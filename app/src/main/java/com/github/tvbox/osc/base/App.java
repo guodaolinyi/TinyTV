@@ -152,7 +152,7 @@ public class App extends MultiDexApplication {
                 .showRestartButton(true) //是否显示重启按钮
                 .trackActivities(true) //是否跟踪Activity
                 .minTimeBetweenCrashesMs(2000) //崩溃的间隔时间(毫秒)
-                .errorDrawable(R.drawable.app_icon) //错误图标
+                .errorDrawable(R.mipmap.ic_launcher) //错误图标
                 .restartActivity(MainActivity.class) //重新启动后的activity
                 .apply();
     }
