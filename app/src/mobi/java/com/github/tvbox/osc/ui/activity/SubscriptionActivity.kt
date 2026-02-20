@@ -1,6 +1,7 @@
 package com.github.tvbox.osc.ui.activity
 
 import android.content.Intent
+import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import com.blankj.utilcode.util.ClipboardUtils
@@ -56,7 +57,7 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                 .show()
         }
 
-        mBinding.titleBar.rightView.setOnClickListener {//添加订阅
+        mBinding.titleBar.rightView.setOnClickListener {
             XPopup.Builder(this)
                 .autoFocusEditText(false)
                 .asCustom(
@@ -68,7 +69,7 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                                 name: String,
                                 url: String,
                                 checked: Boolean
-                            ) { //只有addSub2List用到,看注释,单线路才生效,其余方法仅作为参数继续传递
+                            ) {
                                 for (item in mSubscriptions) {
                                     if (item.url == url) {
                                         ToastUtils.showLong("订阅地址与" + item.name + "相同")
@@ -78,7 +79,7 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                                 addSubscription(name, url, checked)
                             }
 
-                            override fun chooseLocal(checked: Boolean) { //本地导入
+                            override fun chooseLocal(checked: Boolean) {
                                 if (!XXPermissions.isGranted(
                                         mContext,
                                         Permission.MANAGE_EXTERNAL_STORAGE
@@ -103,13 +104,12 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                 XPopup.Builder(this@SubscriptionActivity)
                     .asConfirm("删除订阅", "确定删除订阅吗？") {
                         mSubscriptions.removeAt(position)
-                        //删除/选择只刷新,不触发重新排序
                         mSubscriptionAdapter.notifyDataSetChanged()
                     }.show()
             }
         }
 
-        mSubscriptionAdapter.setOnItemClickListener { _: BaseQuickAdapter<*, *>?, _: View?, position: Int ->  //选择订阅
+        mSubscriptionAdapter.setOnItemClickListener { _: BaseQuickAdapter<*, *>?, _: View?, position: Int ->
             for (i in mSubscriptions.indices) {
                 val subscription = mSubscriptions[i]
                 if (i == position) {
@@ -119,12 +119,11 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                     subscription.setChecked(false)
                 }
             }
-            //删除/选择只刷新,不触发重新排序
             mSubscriptionAdapter.notifyDataSetChanged()
         }
 
         mSubscriptionAdapter.onItemLongClickListener =
-            BaseQuickAdapter.OnItemLongClickListener { adapter: BaseQuickAdapter<*, *>?, view: View, position: Int ->
+            BaseQuickAdapter.OnItemLongClickListener { _: BaseQuickAdapter<*, *>?, view: View, position: Int ->
                 val item = mSubscriptions[position]
                 XPopup.Builder(this)
                     .atView(view.findViewById(R.id.tv_name))
@@ -191,7 +190,6 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                         override fun onDenied(permissions: List<String>, never: Boolean) {
                             if (never) {
                                 ToastUtils.showLong("读写文件权限被永久拒绝，请手动授权")
-                                // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                 XXPermissions.startPermissionActivity(
                                     this@SubscriptionActivity,
                                     permissions
@@ -205,10 +203,6 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
             }.show()
     }
 
-    /**
-     *
-     * @param checked 与showPermissionTipPopup一样,只记录并传递选中状态
-     */
     private fun pickFile(checked: Boolean) {
         ChooserDialog(this@SubscriptionActivity, R.style.FileChooser)
             .withFilter(false, false, "txt", "json")
@@ -246,11 +240,9 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                         dismissLoadingDialog()
                         try {
                             val json = JsonParser.parseString(response.body()).asJsonObject
-                            // 多线路?
                             val urls = json["urls"]
-                            // 多仓?
                             val storeHouse = json["storeHouse"]
-                            if (urls != null && urls.isJsonArray) { // 多线路
+                            if (urls != null && urls.isJsonArray) {
                                 if (checked) {
                                     ToastUtils.showLong("多条线路请主动选择")
                                 }
@@ -258,28 +250,28 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                                 if (urlList != null && urlList.size() > 0 && urlList[0].isJsonObject
                                     && urlList[0].asJsonObject.has("url")
                                     && urlList[0].asJsonObject.has("name")
-                                ) { //多线路格式
+                                ) {
                                     for (i in 0 until urlList.size()) {
                                         val obj = urlList[i] as JsonObject
-                                        val name = obj["name"].asString.trim { it <= ' ' }
+                                        val subName = obj["name"].asString.trim { it <= ' ' }
                                             .replace("<|>|《|》|-".toRegex(), "")
-                                        val url = obj["url"].asString.trim { it <= ' ' }
-                                        mSubscriptions.add(Subscription(name, url))
+                                        val subUrl = obj["url"].asString.trim { it <= ' ' }
+                                        mSubscriptions.add(Subscription(subName, subUrl))
                                     }
                                 }
-                            } else if (storeHouse != null && storeHouse.isJsonArray) { // 多仓
+                            } else if (storeHouse != null && storeHouse.isJsonArray) {
                                 val storeHouseList = storeHouse.asJsonArray
                                 if (storeHouseList != null && storeHouseList.size() > 0 && storeHouseList[0].isJsonObject
                                     && storeHouseList[0].asJsonObject.has("sourceName")
                                     && storeHouseList[0].asJsonObject.has("sourceUrl")
-                                ) { //多仓格式
+                                ) {
                                     mSources.clear()
                                     for (i in 0 until storeHouseList.size()) {
                                         val obj = storeHouseList[i] as JsonObject
-                                        val name = obj["sourceName"].asString.trim { it <= ' ' }
+                                        val sourceName = obj["sourceName"].asString.trim { it <= ' ' }
                                             .replace("<|>|《|》|-".toRegex(), "")
-                                        val url = obj["sourceUrl"].asString.trim { it <= ' ' }
-                                        mSources.add(Source(name, url))
+                                        val sourceUrl = obj["sourceUrl"].asString.trim { it <= ' ' }
+                                        mSources.add(Source(sourceName, sourceUrl))
                                     }
                                     XPopup.Builder(this@SubscriptionActivity)
                                         .asCustom(
@@ -287,7 +279,6 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                                                 this@SubscriptionActivity,
                                                 mSources
                                             ) { position: Int, _: String? ->
-                                                // 再根据多线路格式获取配置,如果仓内是正常多线路模式,name没用,直接使用线路的命名
                                                 addSubscription(
                                                     mSources[position].sourceName,
                                                     mSources[position].sourceUrl,
@@ -296,7 +287,7 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
                                             })
                                         .show()
                                 }
-                            } else { // 单线路/其余
+                            } else {
                                 addSub2List(name, url, checked)
                             }
                         } catch (th: Throwable) {
@@ -321,14 +312,8 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
         }
     }
 
-    /**
-     * 仅当选中本地文件和添加的为单线路时,使用此订阅生效。多线路会直接解析全部并添加,多仓会展开并选择,最后也按多线路处理,直接添加
-     * @param name
-     * @param url
-     * @param checkNewest
-     */
     private fun addSub2List(name: String, url: String, checkNewest: Boolean) {
-        if (checkNewest) { //选中最新的,清除以前的选中订阅
+        if (checkNewest) {
             for (subscription in mSubscriptions) {
                 if (subscription.isChecked) {
                     subscription.setChecked(false)
@@ -343,18 +328,21 @@ class SubscriptionActivity : BaseVbActivity<ActivitySubscriptionBinding>() {
 
     override fun onPause() {
         super.onPause()
-        // 更新缓存
         Hawk.put(HawkConfig.API_URL, mSelectedUrl)
         Hawk.put<List<Subscription>?>(HawkConfig.SUBSCRIPTIONS, mSubscriptions)
     }
 
     override fun finish() {
-        //切换了订阅地址
         if (!TextUtils.isEmpty(mSelectedUrl) && mBeforeUrl != mSelectedUrl) {
             val intent = Intent(this, MainActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.fade_in, R.anim.fade_out)
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            }
         }
         super.finish()
     }

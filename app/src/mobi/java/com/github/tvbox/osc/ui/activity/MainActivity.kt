@@ -3,7 +3,7 @@ package com.github.tvbox.osc.ui.activity
 import android.os.Process
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -25,7 +25,7 @@ class MainActivity : BaseVbActivity<ActivityMainBinding>() {
 
         useCacheConfig = intent.extras?.getBoolean(IntentKey.CACHE_CONFIG_CHANGED, false)?:false
 
-        mBinding.vp.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        mBinding.vp.adapter = object : FragmentStatePagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             override fun getItem(position: Int): Fragment {
                 return fragments[position]
             }
@@ -52,18 +52,18 @@ class MainActivity : BaseVbActivity<ActivityMainBinding>() {
             return
         }
         val homeFragment = fragments[0] as HomeFragment
-        if (!homeFragment.isAdded) { // 资源不足销毁重建时未挂载到activity时getChildFragmentManager会崩溃
+        if (!homeFragment.isAdded) {
             confirmExit()
             return
         }
         val childFragments = homeFragment.allFragments
-        if (childFragments.isEmpty()) { //加载中(没有tab)
+        if (childFragments.isEmpty()) {
             confirmExit()
             return
         }
         val fragment: Fragment = childFragments[homeFragment.tabIndex]
-        if (fragment is GridFragment) { // 首页数据源动态加载的tab
-            if (!fragment.restoreView()) { // 有回退的view,先回退(AList等文件夹列表),没有可回退的,返到主页tab
+        if (fragment is GridFragment) {
+            if (!fragment.restoreView()) {
                 if (!homeFragment.scrollToFirstTab()) {
                     confirmExit()
                 }

@@ -2,6 +2,7 @@ package com.github.tvbox.osc.ui.activity
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ColorUtils
@@ -35,37 +36,36 @@ class VideoListActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
         mBinding.titleBar.setTitle(mBucketDisplayName)
         mBinding.rv.setAdapter(mLocalVideoAdapter)
         mLocalVideoAdapter.onItemClickListener =
-            BaseQuickAdapter.OnItemClickListener { adapter: BaseQuickAdapter<*, *>, view: View?, position: Int ->
+            BaseQuickAdapter.OnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View?, position: Int ->
                 val videoInfo = adapter.getItem(position) as VideoInfo?
                 if (mLocalVideoAdapter.isSelectMode) {
                     videoInfo!!.isChecked = !videoInfo.isChecked
                     mLocalVideoAdapter.notifyDataSetChanged()
                 } else {
                     val bundle = Bundle()
-                    //                    bundle.putString("path",videoInfo.getPath());
                     bundle.putString("videoList", GsonUtils.toJson(mLocalVideoAdapter.data))
                     bundle.putInt("position", position)
                     jumpActivity(LocalPlayActivity::class.java, bundle)
                 }
             }
         mLocalVideoAdapter.onItemLongClickListener =
-            BaseQuickAdapter.OnItemLongClickListener { adapter: BaseQuickAdapter<*, *>, view: View?, position: Int ->
+            BaseQuickAdapter.OnItemLongClickListener { adapter: BaseQuickAdapter<*, *>, _: View?, position: Int ->
                 toggleListSelectMode(true)
                 val videoInfo = adapter.getItem(position) as VideoInfo?
                 videoInfo!!.isChecked = true
-                mLocalVideoAdapter!!.notifyDataSetChanged()
+                mLocalVideoAdapter.notifyDataSetChanged()
                 true
             }
 
-        mBinding.tvAllCheck.setOnClickListener { view: View? ->  //全选
+        mBinding.tvAllCheck.setOnClickListener { view: View? ->
             FastClickCheckUtil.check(view)
             for (item in mLocalVideoAdapter.data) {
                 item.isChecked = true
             }
-            mLocalVideoAdapter!!.notifyDataSetChanged()
+            mLocalVideoAdapter.notifyDataSetChanged()
         }
 
-        mBinding.tvCancelAllChecked.setOnClickListener { view: View? ->  //取消全选
+        mBinding.tvCancelAllChecked.setOnClickListener { view: View? ->
             FastClickCheckUtil.check(view)
             cancelAll()
         }
@@ -94,11 +94,8 @@ class VideoListActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
                             if (item.isChecked) {
                                 deleteList.add(item)
                                 if (FileUtils.delete(item.path)) {
-                                    // 删除缓存的影片时长、进度
                                     SPUtils.getInstance(CacheConst.VIDEO_DURATION_SP).remove(item.path)
                                     SPUtils.getInstance(CacheConst.VIDEO_PROGRESS_SP).remove(item.path)
-                                    // 文件增删需要通知系统扫描,否则删除文件后还能查出来
-                                    // 这个工具类直接传文件路径不知道为啥通知失败,手动获取一下
                                     FileUtils.notifySystemToScan(FileUtils.getDirName(item.path))
                                 }
                             }
@@ -118,7 +115,7 @@ class VideoListActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
     private fun toggleListSelectMode(open: Boolean) {
         mLocalVideoAdapter.setSelectMode(open)
         mBinding.llMenu.visibility = if (open) View.VISIBLE else View.GONE
-        if (!open) { // 开启时设置了当前item为选中状态已经刷新了.所以只在关闭刷新列表
+        if (!open) {
             mLocalVideoAdapter.notifyDataSetChanged()
         }
     }
@@ -131,7 +128,7 @@ class VideoListActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
     }
 
     override fun refresh(event: RefreshEvent) {
-        Handler().postDelayed({ groupVideos() }, 1000)
+        Handler(Looper.getMainLooper()).postDelayed({ groupVideos() }, 1000)
     }
 
     override fun onResume() {
@@ -139,9 +136,6 @@ class VideoListActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
         groupVideos()
     }
 
-    /**
-     * 根据文件夹名字筛选视频
-     */
     private fun groupVideos() {
         val videoList = Utils.getVideoList()
         val collect = videoList.stream()

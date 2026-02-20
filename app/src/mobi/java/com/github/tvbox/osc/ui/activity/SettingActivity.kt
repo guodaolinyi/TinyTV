@@ -33,11 +33,6 @@ import okhttp3.HttpUrl
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import java.io.File
 
-/**
- * @author pj567
- * @date :2020/12/23
- * @description:
- */
 class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
 
     private var homeRec = Hawk.get(HawkConfig.HOME_REC, 0)
@@ -45,7 +40,7 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
     private var currentLiveApi = Hawk.get(HawkConfig.LIVE_URL, "")
     override fun init() {
 
-        mBinding.titleBar.leftView.setOnClickListener { onBackPressed() }
+        mBinding.titleBar.leftView.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         mBinding.tvMediaCodec.text = Hawk.get(HawkConfig.IJK_CODEC, "")
 
         mBinding.tvDns.text = OkGoHelper.dnsHttpsList[Hawk.get(HawkConfig.DOH_URL, 0)]
@@ -58,7 +53,7 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
             PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0))
 
         mBinding.switchPrivateBrowsing.setChecked(Hawk.get(HawkConfig.PRIVATE_BROWSING, false))
-        mBinding.llPrivateBrowsing.setOnClickListener { view: View? ->
+        mBinding.llPrivateBrowsing.setOnClickListener {
             val newConfig = !Hawk.get(HawkConfig.PRIVATE_BROWSING, false)
             mBinding.switchPrivateBrowsing.setChecked(newConfig)
             Hawk.put(HawkConfig.PRIVATE_BROWSING, newConfig)
@@ -377,8 +372,8 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
         val oldTheme = Hawk.get(HawkConfig.THEME_TAG, 0)
         val themes = arrayOf("跟随系统", "浅色", "深色")
         mBinding.tvTheme.text = themes[oldTheme]
-        mBinding.llTheme.setOnClickListener(View.OnClickListener { view: View? ->
-            FastClickCheckUtil.check(view)
+        mBinding.llTheme.setOnClickListener {
+            FastClickCheckUtil.check(it)
             val types = ArrayList<Int>()
             types.add(0)
             types.add(1)
@@ -403,7 +398,7 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
                     return oldItem == newItem
                 }
             }, types, oldTheme)
-            dialog.setOnDismissListener { dialog1: DialogInterface? ->
+            dialog.setOnDismissListener { _: DialogInterface? ->
                 if (oldTheme != Hawk.get(HawkConfig.THEME_TAG, 0)) {
                     Utils.initTheme()
                     val bundle = Bundle()
@@ -412,10 +407,9 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
                 }
             }
             dialog.show()
-        })
+        }
 
         mBinding.switchVideoPurify.setChecked(Hawk.get(HawkConfig.VIDEO_PURIFY, true))
-        // toggle purify video -------------------------------------
         mBinding.llVideoPurify.setOnClickListener { v: View? ->
             FastClickCheckUtil.check(v)
             val newConfig = !Hawk.get(HawkConfig.VIDEO_PURIFY, true)
@@ -431,24 +425,32 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
         }
     }
 
-    override fun onBackPressed() {
+    private fun doFinishWithTransition() {
         if (homeRec != Hawk.get(HawkConfig.HOME_REC, 0) || dnsOpt != Hawk.get(
                 HawkConfig.DOH_URL,
                 0
             ) || currentLiveApi != Hawk.get(HawkConfig.LIVE_URL, "")
-        ) { // 首页类型/dns/doh/直播源有更改,需重载页面
-            //AppManager.getInstance().finishAllActivity()
-            if (currentLiveApi == Hawk.get(HawkConfig.LIVE_URL, "")) { //未更改直播源,不需重载api等
+        ) {
+            if (currentLiveApi == Hawk.get(HawkConfig.LIVE_URL, "")) {
                 val bundle = Bundle()
                 bundle.putBoolean(IntentKey.CACHE_CONFIG_CHANGED, true)
                 jumpActivity(MainActivity::class.java, bundle)
             } else {
                 jumpActivity(MainActivity::class.java)
             }
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.fade_in, R.anim.fade_out)
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            }
         } else {
-            super.onBackPressed()
+            finish()
         }
+    }
+
+    override fun onBackPressed() {
+        doFinishWithTransition()
     }
 
     private fun onClickClearCache(v: View) {

@@ -1,6 +1,5 @@
 package com.github.tvbox.osc.ui.activity
 
-import android.os.Build
 import android.os.Bundle
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.github.tvbox.osc.base.BaseVbActivity
@@ -9,7 +8,6 @@ import com.github.tvbox.osc.bean.VideoInfo
 import com.github.tvbox.osc.databinding.ActivityMovieFoldersBinding
 import com.github.tvbox.osc.ui.adapter.FolderAdapter
 import com.github.tvbox.osc.util.Utils
-import java.util.function.Function
 import java.util.stream.Collectors
 
 class MovieFoldersActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
@@ -18,7 +16,7 @@ class MovieFoldersActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
     override fun init() {
         mBinding.rv.setAdapter(mFolderAdapter)
         mFolderAdapter.onItemClickListener =
-            BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            BaseQuickAdapter.OnItemClickListener { adapter, _, position ->
                 val videoFolder = adapter.getItem(position) as VideoFolder?
                 if (videoFolder != null) {
                     val bundle = Bundle()
@@ -33,9 +31,6 @@ class MovieFoldersActivity : BaseVbActivity<ActivityMovieFoldersBinding>() {
         groupVideos()
     }
 
-    /**
-     * 按文件夹名字分组视频
-     */
     private fun groupVideos() {
         val videoList = Utils.getVideoList()
         val videoMap = videoList.stream()

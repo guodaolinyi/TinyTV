@@ -1,7 +1,7 @@
 package com.github.tvbox.osc.ui.activity
 
 import android.content.Intent
-import android.os.Handler
+import android.os.Build
 import com.github.tvbox.osc.R
 import com.github.tvbox.osc.base.App
 import com.github.tvbox.osc.base.BaseVbActivity
@@ -13,7 +13,12 @@ class SplashActivity : BaseVbActivity<ActivitySplashBinding>() {
 
         mBinding.root.postDelayed({
             startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.fade_in, R.anim.fade_out)
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            }
             finish()
         },500)
 

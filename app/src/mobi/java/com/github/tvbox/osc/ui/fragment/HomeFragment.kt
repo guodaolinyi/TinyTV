@@ -3,6 +3,7 @@ package com.github.tvbox.osc.ui.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -50,35 +51,22 @@ import kotlinx.coroutines.withContext
 
 class HomeFragment : BaseVbFragment<FragmentHomeBinding>() {
 
-    /**
-     * 提供给主页返回操作
-     */
     val tabIndex: Int
         get() = mBinding.tabLayout.currentItemIndex
 
-    /**
-     * 提供给主页返回操作
-     */
     val allFragments: List<BaseLazyFragment>
         get() = fragments
 
     private var sourceViewModel: SourceViewModel? = null
     private val fragments: MutableList<BaseLazyFragment> = ArrayList()
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
 
-    /**
-     * 顶部tabs分类集合,用于渲染tab页,每个tab对应fragment内的数据
-     */
     private var mSortDataList: List<SortData> = ArrayList()
     private var dataInitOk = false
     private var jarInitOk = false
 
     var errorTipDialog: TipDialog? = null
 
-    /**
-     * true: 配置变更重载
-     * false: 全部重载(api变更、重启app等)
-     */
     var onlyConfigChanged = false
 
     override fun init() {
@@ -139,8 +127,6 @@ class HomeFragment : BaseVbFragment<FragmentHomeBinding>() {
         showLoading()
         when{
             dataInitOk && jarInitOk -> {
-                //正常初始化会先加载,最终到这,此时数据有以下几种情况
-                // 1. api/jar/spider等均加载完,正常显示数据。2. 缺失spider(存疑?)/api配置有问题同样加载(最后空布局 或 只有豆瓣首页)
                 sourceViewModel?.getSort(ApiConfig.get().homeSourceBean.key)
             }
             dataInitOk && !jarInitOk -> {
@@ -266,28 +252,27 @@ class HomeFragment : BaseVbFragment<FragmentHomeBinding>() {
             fragments.clear()
             for (data in mSortDataList) {
                 mBinding.tabLayout.addView(getTabTextView(data.name))
-                if (data.id == "my0") { //tab是主页,添加主页fragment 根据设置项显示豆瓣热门/站点推荐(每个源不一样)/历史记录
+                if (data.id == "my0") {
                     if (Hawk.get(
                             HawkConfig.HOME_REC,
                             0
                         ) == 1 && absXml != null && absXml.videoList != null && absXml.videoList.size > 0
-                    ) { //站点推荐
+                    ) {
                         fragments.add(UserFragment.newInstance(absXml.videoList))
-                    } else { //豆瓣热门/历史记录
+                    } else {
                         fragments.add(UserFragment.newInstance(null))
                     }
-                } else { //来自源的分类
+                } else {
                     fragments.add(GridFragment.newInstance(data))
                 }
             }
-            if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) { //关闭主页
+            if (Hawk.get(HawkConfig.HOME_REC, 0) == 2) {
                 mBinding.tabLayout.removeViewAt(0)
                 fragments.removeAt(0)
             }
 
-            //重新渲染vp
             mBinding.mViewPager.adapter =
-                object : FragmentStatePagerAdapter(getChildFragmentManager()) {
+                object : FragmentStatePagerAdapter(getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
                     override fun getItem(position: Int): Fragment {
                         return fragments[position]
                     }
@@ -296,14 +281,10 @@ class HomeFragment : BaseVbFragment<FragmentHomeBinding>() {
                         return fragments.size
                     }
                 }
-            //tab和vp绑定
             install(mBinding.mViewPager, mBinding.tabLayout, true)
         }
     }
 
-    /**
-     * 提供给主页返回操作
-     */
     fun scrollToFirstTab(): Boolean {
         return if (mBinding.tabLayout.currentItemIndex != 0) {
             mBinding.mViewPager.setCurrentItem(0, false)
@@ -376,7 +357,6 @@ class HomeFragment : BaseVbFragment<FragmentHomeBinding>() {
                 vodInfoList
             }
 
-            // 查询完成后更新UI
             if (vodInfoList.isNotEmpty() && vodInfoList[0] != null) {
                 XPopup.Builder(context)
                     .hasShadowBg(false)
