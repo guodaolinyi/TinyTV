@@ -1,16 +1,123 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
-	<meta name="wechat-enable-text-zoom-em" content="true">
-	<title>TVBox</title>
-	<meta name="layoutmode" content="standard">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet" type="text/css" href="ui.css">
+	<title>TinyTV</title>
+	<style>
+/**
+ * TinyTV TV版 - 精简样式 (已合并)
+ */
+:root {
+    --weui-BG-0: #ededed;
+    --weui-BG-1: #f7f7f7;
+    --weui-BG-2: #fff;
+    --weui-FG-0: rgba(0, 0, 0, 0.9);
+    --weui-FG-1: rgba(0, 0, 0, 0.5);
+    --weui-FG-2: rgba(0, 0, 0, 0.3);
+    --weui-BRAND: #07c160;
+    --weui-LINK: #576b95;
+    --weui-RED: #fa5151;
+    --weui-BTN-DEFAULT-BG: #f2f2f2;
+    --weui-BTN-DEFAULT-COLOR: #06ae56;
+    --weui-BTN-DEFAULT-ACTIVE-BG: #e6e6e6;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --weui-BG-0: #111;
+        --weui-BG-1: #1e1e1e;
+        --weui-BG-2: #191919;
+        --weui-FG-0: hsla(0, 0%, 100%, 0.8);
+        --weui-FG-1: hsla(0, 0%, 100%, 0.5);
+        --weui-FG-2: hsla(0, 0%, 100%, 0.3);
+        --weui-BTN-DEFAULT-BG: hsla(0, 0%, 100%, 0.08);
+        --weui-BTN-DEFAULT-COLOR: hsla(0, 0%, 100%, 0.8);
+    }
+}
+* { margin: 0; padding: 0; outline: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; -webkit-tap-highlight-color: transparent; }
+body {
+    line-height: 1.6;
+    font-family: system-ui, -apple-system, Helvetica Neue, sans-serif;
+    height: 100%;
+    background-color: var(--weui-BG-0);
+}
+a { text-decoration: none; }
+a img { border: 0; }
+::placeholder { color: var(--weui-FG-2); }
+.page {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1;
+    background-color: var(--weui-BG-0);
+}
+.weui-tab { height: 100%; display: flex; flex-direction: column; }
+.weui-tab__panel { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.weui-tabbar { display: flex; background: var(--weui-BG-2); border-top: 1px solid rgba(0,0,0,0.1); }
+.weui-tabbar__item { flex: 1; padding: 8px 0; text-align: center; color: var(--weui-FG-1); cursor: pointer; }
+.weui-tabbar__item.weui-bar__item_on { color: var(--weui-BRAND); }
+.weui-tabbar__icon { display: block; width: 20px; height: 20px; margin: 0 auto 2px; }
+.weui-tabbar__label { font-size: 12px; }
+.weui-form { padding: 24px 16px; }
+.weui-form__title { font-size: 20px; font-weight: 500; color: var(--weui-FG-0); }
+.weui-form__text-area { text-align: center; margin-bottom: 24px; }
+.weui-form__control-area { margin-bottom: 24px; }
+.weui-cells { background: var(--weui-BG-2); border-radius: 8px; overflow: hidden; }
+.weui-cells__group_form { margin-top: 0; }
+.weui-cells__group_form .weui-cells { margin: 8px 0; }
+.weui-cell { padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.weui-cell:last-child { border-bottom: none; }
+.weui-cell_access:active { background: var(--weui-BG-1); }
+.weui-cell__hd { margin-right: 8px; }
+.weui-cell__bd { flex: 1; min-width: 0; }
+.weui-cell__ft { margin-left: 8px; color: var(--weui-FG-1); }
+.weui-cell__desc { font-size: 12px; color: var(--weui-FG-1); margin-top: 2px; }
+.weui-cell__control { margin: 0 4px; }
+.weui-cell__control_flex { flex: 1; }
+.weui-label { display: block; width: 80px; font-size: 14px; }
+.weui-flex { display: flex; align-items: center; }
+.weui-input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 16px; color: var(--weui-FG-0); line-height: 1.4; }
+.weui-btn { display: inline-block; padding: 8px 16px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; text-align: center; vertical-align: middle; }
+.weui-btn_mini { padding: 4px 12px; font-size: 12px; }
+.weui-btn_default { background: var(--weui-BTN-DEFAULT-BG); color: var(--weui-BTN-DEFAULT-COLOR); }
+.weui-btn_default:active { background: var(--weui-BTN-DEFAULT-ACTIVE-BG); }
+.weui-btn_primary { background: var(--weui-BRAND); color: #fff; }
+.weui-btn_primary:active { opacity: 0.8; }
+.weui-btn_warn { background: var(--weui-RED); color: #fff; }
+.weui-btn_warn:active { opacity: 0.8; }
+.weui-vcode-btn { margin: 0 4px; }
+.button-sp-area { text-align: center; }
+.weui-wa-hotarea { margin: 4px; }
+.weui-mask { position: fixed; z-index: 1000; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.6); }
+.weui-mask_transparent { position: fixed; z-index: 1000; top: 0; right: 0; bottom: 0; left: 0; }
+.weui-dialog { position: fixed; z-index: 1001; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; background: var(--weui-BG-2); border-radius: 12px; overflow: hidden; }
+.weui-dialog__hd { padding: 24px 16px 8px; text-align: center; }
+.weui-dialog__title { font-size: 16px; font-weight: 500; }
+.weui-dialog__bd { padding: 0 16px 24px; text-align: center; font-size: 14px; color: var(--weui-FG-1); }
+.weui-dialog__ft { display: flex; border-top: 1px solid rgba(0,0,0,0.1); }
+.weui-dialog__btn { flex: 1; padding: 12px; font-size: 16px; text-align: center; cursor: pointer; background: transparent; border: none; border-right: 1px solid rgba(0,0,0,0.1); }
+.weui-dialog__btn:last-child { border-right: none; }
+.weui-dialog__btn_default { color: var(--weui-FG-1); }
+.weui-dialog__btn_primary { color: var(--weui-BRAND); }
+.weui-half-screen-dialog { position: fixed; z-index: 1001; bottom: 0; left: 0; right: 0; background: var(--weui-BG-2); border-radius: 12px 12px 0 0; max-height: 80vh; overflow-y: auto; }
+.weui-half-screen-dialog__hd { padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.weui-half-screen-dialog__hd__main { font-size: 16px; font-weight: 500; }
+.weui-half-screen-dialog__tips { font-size: 12px; color: var(--weui-FG-1); display: block; margin-top: 4px; }
+.weui-half-screen-dialog__bd { padding: 16px; }
+.weui-half-screen-dialog__ft { padding: 16px; }
+.weui-half-screen-dialog__btn-area { display: flex; gap: 8px; }
+.weui-half-screen-dialog__btn-area .weui-btn { flex: 1; }
+.weui-toast { position: fixed; z-index: 2000; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: #fff; padding: 12px 24px; border-radius: 8px; text-align: center; min-width: 120px; }
+.weui-icon_toast { display: block; margin: 0 auto 8px; font-size: 40px; }
+.weui-icon-warn::before { content: "!"; font-size: 40px; font-weight: bold; }
+.weui-toast__content { font-size: 14px; }
+.weui-primary-loading { display: inline-block; width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: weui-loading 0.8s linear infinite; }
+.weui-primary-loading__dot { display: none; }
+@keyframes weui-loading { to { transform: rotate(360deg); } }
+	</style>
 </head>
-
 <body>
 	<div class="page">
 		<div class="page__bd" style="height: 100%;">
@@ -18,18 +125,15 @@
 				<div id="panel1" role="tabpanel" aria-labelledby="tab1" class="weui-tab__panel">
 					<div class="weui-form">
 						<div class="weui-form__text-area">
-							<h2 class="weui-form__title">TVBox . 搜索</h2>
+							<h2 class="weui-form__title">TinyTV . 搜索</h2>
 						</div>
 						<div class="weui-form__control-area">
 							<div class="weui-cells__group weui-cells__group_form">
 								<div class="weui-cells">
 									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
 										<div class="weui-cell__bd weui-flex">
-											<input id="search_key_word"
-												class="weui-input weui-cell__control weui-cell__control_flex"
-												type="text" value="" placeholder="请输入搜索的关键字..." />
-											<button onclick="search(); return false;"
-												class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">搜索</button>
+											<input id="search_key_word" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="请输入搜索的关键字..." />
+											<button onclick="search();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">搜索</button>
 										</div>
 									</div>
 								</div>
@@ -40,18 +144,22 @@
 				<div id="panel2" role="tabpanel" aria-labelledby="tab2" class="weui-tab__panel" style="display: none;">
 					<div class="weui-form">
 						<div class="weui-form__text-area">
-							<h2 class="weui-form__title">TVBox . 推送</h2>
+							<h2 class="weui-form__title">TinyTV . 推送</h2>
 						</div>
 						<div class="weui-form__control-area">
 							<div class="weui-cells__group weui-cells__group_form">
 								<div class="weui-cells">
 									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
 										<div class="weui-cell__bd weui-flex">
-											<input id="push_url"
-												class="weui-input weui-cell__control weui-cell__control_flex"
-												type="text" value="" placeholder="请输入需要推送播放的地址..." />
-											<button onclick="push(); return false;"
-												class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">推送</button>
+											<input id="push_url" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="请输入需要推送播放的地址..." />
+										</div>
+									</div>
+									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+										<div class="weui-cell__bd weui-flex">
+											<button onclick="push();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">推送</button>
+										</div>
+										<div class="weui-cell__bd weui-flex">
+											<button onclick="document.getElementById('push_url').value='';" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">清空</button>
 										</div>
 									</div>
 								</div>
@@ -62,18 +170,33 @@
 				<div id="panel3" role="tabpanel" aria-labelledby="tab3" class="weui-tab__panel" style="display: none;">
 					<div class="weui-form" style="min-height: 0;">
 						<div class="weui-form__text-area">
-							<h2 class="weui-form__title">TVBox . 接口</h2>
+							<h2 class="weui-form__title">TinyTV . 接口</h2>
 						</div>
-						<div class="weui-form__control-area" style="margin-bottom: 0px !important;">
+						<div class="weui-form__control-area" style="margin-bottom: 0;">
 							<div class="weui-cells__group weui-cells__group_form">
 								<div class="weui-cells">
 									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
 										<div class="weui-cell__bd weui-flex">
-											<input id="diy_api_url"
-												class="weui-input weui-cell__control weui-cell__control_flex"
-												type="text" value="" placeholder="请输入自定义配置接口地址..." />
-											<button onclick="api(); return false;"
-												class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">确定</button>
+											<input id="diy_api_url" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="1. 请输入数据源地址" />
+											<button onclick="api();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">确定</button>
+										</div>
+									</div>
+									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+										<div class="weui-cell__bd weui-flex">
+											<input id="diy_live_url" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="2. 请输入直播源地址 (optional)" />
+											<button onclick="live();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">确定</button>
+										</div>
+									</div>
+									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+										<div class="weui-cell__bd weui-flex">
+											<input id="diy_epg_url" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="3. 请输入直播EPG地址 (optional)" />
+											<button onclick="epg();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">确定</button>
+										</div>
+									</div>
+									<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
+										<div class="weui-cell__bd weui-flex">
+											<input id="diy_proxy_server" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="socks代理服务器IP:端口" />
+											<button onclick="proxys();return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">确定</button>
 										</div>
 									</div>
 								</div>
@@ -85,99 +208,56 @@
 							<h2 class="weui-form__title">本地文件</h2>
 						</div>
 						<input type="file" id="file_uploader" style="display:none;" onchange="uploadTip()" multiple />
-						<div class="weui-form__control-area" style="text-align: center;margin-bottom: 10px !important;">
+						<div class="weui-form__control-area" style="text-align: center;margin-bottom: 10px;">
 							<div class="button-sp-area" style="margin-top: 10px;">
-								<a href="javascript:void(0)" role="button"
-									class="weui-btn weui-btn_mini weui-btn_default weui-wa-hotarea"
-									href="javascript:void(0)" onclick="uploadFile()">上传文件</a>&nbsp;
-								<a href="javascript:void(0)" role="button"
-									class="weui-btn weui-btn_mini weui-btn_default weui-wa-hotarea"
-									href="javascript:void(0)" onclick="newFolder()">新建文件夹</a>&nbsp;
-								<a id="delCurFolder" href="javascript:void(0)" role="button"
-									class="weui-btn weui-btn_mini weui-btn_warn weui-wa-hotarea"
-									href="javascript:void(0)" onclick="delFolder()" style="display: none;">删除当前文件夹</a>
+								<a href="javascript:void(0)" class="weui-btn weui-btn_mini weui-btn_default weui-wa-hotarea" onclick="uploadFile()">上传文件</a>
+								<a href="javascript:void(0)" class="weui-btn weui-btn_mini weui-btn_default weui-wa-hotarea" onclick="newFolder()">新建文件夹</a>
+								<a id="delCurFolder" href="javascript:void(0)" class="weui-btn weui-btn_mini weui-btn_warn weui-wa-hotarea" onclick="delFolder()" style="display: none;">删除当前文件夹</a>
 							</div>
 						</div>
-						<div class="weui-cells" id="file_list">
-						</div>
+						<div class="weui-cells" id="file_list"></div>
 					</div>
 				</div>
 				<div role="tablist" class="weui-tabbar">
-					<div id="tab1" role="tab" aria-labelledby="t1_title" aria-selected="true" aria-controls="panel1"
-						class="weui-tabbar__item weui-bar__item_on">
-						<img style="width: 20px; height: 20px; margin: 5px 0 5px 0;"
-							src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKfSURBVFiFxdfPi1ZVGMDxz31HCnOq0ZkK00THlxhpIToELdxILkQMRMN1bly1EAlxY/0BswqiFi7KnW3aBSJFKTg2iJY/CsIfEZqjmSJiipKdFvfR9/Jy7zv3bd55PXA4l3vO8zzf85zznPOcLKWkU8mybCE2YhPGsATDuIGr+Blf43BK6U5HZWUlpVRaMQ/78ACpRr2H3WhU6SyrWZkHsixbjc+xJpSfwUmcivZCeGMtxqO+EeLHsCOldL5rD2AAH+FhGP4Nb9eZCd7BHwVv7Kol16bkk1DwLz7FYDfuxBC+KCzLh7UBsLMguLUbwyUgOwoT2T4jABbjbgh9NhvjBYiDoe8vDM0EsD8GX8CCHgEskodpwkSHcYbxT7hrXS+MF5RvCoC/8VwVwHsx6JdeGi8YmA79W8r6G9gcEXmiVtx2X05Gu7mss4FmnwCaZZ0N+dneD4AlZZ0NDMb39TkCeKz3mSqA6fheO0cAa6I9XQVwJb7fnCOA8WhPVQFMPk0AeEsep7cxv8dnwItaN+trVQdRhvMx6OMeAxwIvd/OdBe8q3V7re+R8S1auUGzI0AIHAmB3/HCLI2/JA+/hL0dxxaEFssjIuEoVvxP42PyQy3JQ29eLYAQHsefIXwX75PnjTUMD2AP7mslNsfxfG2Agvu+LCj5PtazaheviD00VZCZLExkstOSdprRtsI6Pq43cEieO36Dm239l0QKJs+Sr8X/KRVZ0UxuHcEEfm0zVKz38SM+wLNt8qu08oETWNhuo/RdUFayLFup9TIakqdv53AxpfSog9zr+A6vBuiGlNKtJwNmE25dREYTl8MTP2Gk1hL0GGJUfsYknMXLfQUIiOXy11aSP2pfqb0HelWyLFsm3xOj+KHvAAGxFF/h8n+GU+2I7XnhZwAAAABJRU5ErkJggg=="
-							alt="" class="weui-tabbar__icon">
-						<p id="t1_title" aria-hidden="true" class="weui-tabbar__label">搜索</p>
+					<div id="tab1" role="tab" aria-selected="true" aria-controls="panel1" class="weui-tabbar__item weui-bar__item_on">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKfSURBVFiFxdfPi1ZVGMDxz31HCnOq0ZkK00THlxhpIToELdxILkQMRMN1bly1EAlxY/0BswqiFi7KnW3aBSJFKTg2iJY/CsIfEZqjmSJiipKdFvfR9/Jy7zv3bd55PXA4l3vO8zzf85zznPOcLKWkU8mybCE2YhPGsATDuIGr+Blf43BK6U5HZWUlpVRaMQ/78ACpRr2H3WhU6SyrWZkHsixbjc+xJpSfwUmcivZCeGMtxqO+EeLHsCOldL5rD2AAH+FhGP4Nb9eZCd7BHwVv7Kol16bkk1DwLz7FYDfuxBC+KCzLh7UBsLMguLUbwyUgOwoT2T4jABbjbgh9NhvjBYiDoe8vDM0EsD8GX8CCHgEskodpwkSHcYbxT7hrXS+MF5RvCoC/8VwVwHsx6JdeGi8YmA79W8r6G9gcEXmiVtx2X05Gu7mss4FmnwCaZZ0N+dneD4AlZZ0NDMb39TkCeKz3mSqA6fheO0cAa6I9XQVwJb7fnCOA8WhPVQFMPk0AeEsep7cxv8dnwItaN+trVQdRhvMx6OMeAxwIvd/OdBe8q3V7re+R8S1auUGzI0AIHAmB3/HCLI2/JA+/hL0dxxaEFssjIuEoVvxP42PyQy3JQ29eLYAQHsefIXwX75PnjTUMD2AP7mslNsfxfG2Agvu+LCj5PtazaheviD00VZCZLExkstOSdprRtsI6Pq43cEieO36Dm239l0QKJs+Sr8X/KRVZ0UxuHcEEfm0zVKz38SM+wLNt8qu08oETWNhuo/RdUFayLFup9TIakqdv53AxpfSog9zr+A6vBuiGlNKtJwNmE25dREYTl8MTP2Gk1hL0GGJUfsYknMXLfQUIiOXy11aSP2pfqb0HelWyLFsm3xOj+KHvAAGxFF/h8n+GU+2I7XnhZwAAAABJRU5ErkJggg==" alt="" class="weui-tabbar__icon">
+						<p class="weui-tabbar__label">搜索</p>
 					</div>
-					<div id="tab2" role="tab" aria-labelledby="t2_title" aria-selected="false" aria-controls="panel2"
-						class="weui-tabbar__item">
-						<img style="width: 20px; height: 20px; margin: 5px 0 5px 0;"
-							src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJlSURBVFiF7ddNSNRBGMfxzy6B4aUsoxfMXiQwO1kEHewQXUI6FXWqIIzQgii69XILOnToFlYE3SMSkiCJolsW7CUIen+j6FJBiGWm02FHG9fddZdELw48/Hdmfs/zfGfmYZjNhBDMZsvOavY5AMyrRpzJZLagHRuj1eAFnqI7hJCrmiCEMKVhIa5gFKGM9aGhkpjjsStI3orPMcEPXMQeNKAeW3Ea36LmEzZNCwAW4FUM/BItZbR1uBm1X7F8OgBuxIDPUFfBbtXgYfS5/V8A2JycbXvFW8pajCS71o29qK8W4FQMcr/EfAOeIIfVBXM9RQp0AIeqAbgfHSc7sTKpjYB3WJPMz0MzduMs3ibam1hUEgDz0Ymh6NBWJPnrIit8n0IU+NTiPH4X7mqhsANfCgLXJ/ONSfJconmUQKwts6ttCUTHBACcSwL24WB6tliFN0nyRYl+QQLxAU1lIE5E3XcsGxs8GQcH0VnEaVVyjrmxMxwDiL9TiI9TQIzV11FYKn/DBewv4fCkMHkhQBGIp2UAuqLmGlyInZ4yDpfRmyYvBpBA3ML1MvGakgV5EDu7SjmUCTQJoEK/xdH3RxYb5Fu/mWvN8fssi+HYGZxBgG3x25+VLzBYNxOZM5lMLY7F7t0sHsfOvpkAwHEswb0Qwh1YIf+YGMSOKoupF71V6Lfjj/yxt4zfhHH1IU4crraqK0zeKv9QCTgyPp4ILvl3teZwBuunKXkHfsbYJybMFQh3+vf+m24bQNckuCK0C3EAV/Ecv6INRfsdbTixP9FGoo2a+ILuQWOx3cnEpLPWZv2f0RzAX4u0r6Ikm0C7AAAAAElFTkSuQmCC"
-							alt="" class="weui-tabbar__icon">
-						<p aria-hidden="true" id="t2_title" class="weui-tabbar__label">推送</p>
+					<div id="tab2" role="tab" aria-selected="false" aria-controls="panel2" class="weui-tabbar__item">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAuQAAALkB4qdB6AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJlSURBVFiF7ddNSNRBGMfxzy6B4aUsoxfMXiQwO1kEHewQXUI6FXWqIIzQgii69XILOnToFlYE3SMSkiCJolsW7CUIen+j6FJBiGWm02FHG9fddZdELw48/Hdmfs/zfGfmYZjNhBDMZsvOavY5AMyrRpzJZLagHRuj1eAFnqI7hJCrmiCEMKVhIa5gFKGM9aGhkpjjsStI3orPMcEPXMQeNKAeW3Ea36LmEzZNCwAW4FUM/BItZbR1uBm1X7F8OgBuxIDPUFfBbtXgYfS5/V8A2JycbXvFW8pajCS71o29qK8W4FQMcr/EfAOeIIfVBXM9RQp0AIeqAbgfHSc7sTKpjYB3WJPMz0MzduMs3ibam1hUEgDz0Ymh6NBWJPnrIit8n0IU+NTiPH4X7mqhsANfCgLXJ/ONSfJconmUQKwts6ttCUTHBACcSwL24WB6tliFN0nyRYl+QQLxAU1lIE5E3XcsGxs8GQcH0VnEaVVyjrmxMxwDiL9TiI9TQIzV11FYKn/DBewv4fCkMHkhQBGIp2UAuqLmGlyInZ4yDpfRmyYvBpBA3ML1MvGakgV5EDu7SjmUCTQJoEK/xdH3RxYb5Fu/mWvN8fssi+HYGZxBgG3x25+VLzBYNxOZM5lMLY7F7t0sHsfOvpkAwHEswb0Qwh1YIf+YGMSOKoupF71V6Lfjj/yxt4zfhHH1IU4crraqK0zeKv9QCTgyPp4ILvl3teZwBuunKXkHfsbYJybMFQh3+vf+m24bQNckuCK0C3EAV/Ecv6INRfsdbTixP9FGoo2a+ILuQWOx3cnEpLPWZv2f0RzAX4u0r6Ikm0C7AAAAAElFTkSuQmCC" alt="" class="weui-tabbar__icon">
+						<p class="weui-tabbar__label">推送</p>
 					</div>
-					<div id="tab3" role="tab" aria-labelledby="t3_title" aria-selected="false" aria-controls="panel3"
-						class="weui-tabbar__item">
-						<img style="width: 20px; height: 20px; margin: 5px 0 5px 0;"
-							src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAC5AAAAuQHip0HoAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAANtQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhQHXOQAAAEh0Uk5TAAECBAUGCQoNDxITGiAhKC4xMjM0Nzg8P0BDT1dmbHR4fX+MlpedoKOkp6issri5vL2/zs/S19zd4OHi5OXp7e/x8/f6+/z+bkNkuAAAATRJREFUOMuNk2kzAmAUhR8iUSHSokWobCFLtFBI9fz/X+RDzdQY9brfzl3mbufAghVfVF+KLLHoh6p+RJckHGkxmSzq0ZKEjF2ArplfgcPjHYBC2w5Ax3YBYOf4cBovjfw82dy71/ElwOVY7/c2Tz4dlQB2h6q9b3uVxLQiUen53VMd7gINWwflgT7G503jjzoop55sQN5JBuK12sbiWBu1WhzSE/PcectSu/WOjs31uWcrm92ao/WmHc70OTtzbNfHOq5vz2D2Wc9Yq3zpBQCxV+339TUGwIV+VdaAxIMtAKq+5SD3bhWAlg+zvc+9BogMzQHkHEYAbjyf9bryFGDf/hT33Qc49eq/CaEWgSGDawYPFTx18Fl5J+mV76bhU2oVYcKUC5I2TPuwcP4tvaB4/5T/D6drVhrBHvH6AAAAAElFTkSuQmCC"
-							alt="" class="weui-tabbar__icon">
-						<p id="t3_title" aria-hidden="true" class="weui-tabbar__label">配置</p>
+					<div id="tab3" role="tab" aria-selected="false" aria-controls="panel3" class="weui-tabbar__item">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAC5AAAAuQHip0HoAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAANtQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhQHXOQAAAEh0Uk5TAAECBAUGCQoNDxITGiAhKC4xMjM0Nzg8P0BDT1dmbHR4fX+MlpedoKOkp6issri5vL2/zs/S19zd4OHi5OXp7e/x8/f6+/z+bkNkuAAAATRJREFUOMuNk2kzAmAUhR8iUSHSokWobCFLtFBI9fz/X+RDzdQY9brfzl3mbufAghVfVF+KLLHoh6p+RJckHGkxmSzq0ZKEjF2ArplfgcPjHYBC2w5Ax3YBYOf4cBovjfw82dy71/ElwOVY7/c2Tz4dlQB2h6q9b3uVxLQiUen53VMd7gINWwflgT7G503jjzoop55sQN5JBuK12sbiWBu1WhzSE/PcectSu/WOjs31uWcrm92ao/WmHc70OTtzbNfHOq5vz2D2Wc9Yq3zpBQCxV+339TUGwIV+VdaAxIMtAKq+5SD3bhWAlg+zvc+9BogMzQHkHEYAbjyf9bryFGDf/hT33Qc49eq/CaEWgSGDawYPFTx18Fl5J+mV76bhU2oVYcKUC5I2TPuwcP4tvaB4/5T/D6drVhrBHvH6AAAAAElFTkSuQmCC" alt="" class="weui-tabbar__icon">
+						<p class="weui-tabbar__label">配置</p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div id="fileInfoDialog" role="dialog" aria-modal="false" aria-hidden="true" style="display: none;">
-		<div role="button" class="weui-mask"></div>
+	<div id="fileInfoDialog" role="dialog" style="display: none;">
+		<div class="weui-mask"></div>
 		<div class="weui-half-screen-dialog">
 			<div class="weui-half-screen-dialog__hd">
-				<div class="weui-half-screen-dialog__hd__main">
-					文件接口
-					<span class="weui-half-screen-dialog__tips" role="option">
-						点击使用时请打开应用内接口设置对话框
-					</span>
-				</div>
+				<div class="weui-half-screen-dialog__hd__main">文件接口<span class="weui-half-screen-dialog__tips">点击使用时请打开应用内接口设置对话框</span></div>
 			</div>
 			<div class="weui-half-screen-dialog__bd" id="fileInfo">
-				<div class="weui-form__control-area" style="margin-bottom: 0px !important;">
+				<div class="weui-form__control-area" style="margin-bottom: 0;">
 					<div class="weui-cells__group weui-cells__group_form">
 						<div class="weui-cells">
-							<!-- <div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
-								<div class="weui-cell__hd"><label class="weui-label">测试地址</label></div>
-							</div>
-							<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
-								<div class="weui-cell__bd weui-flex">
-									<input id="fileUrl0" class="weui-input weui-cell__control weui-cell__control_flex"
-										type="text" value="" readonly />
-
-								</div>
-							</div> -->
 							<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
 								<div class="weui-cell__hd"><label class="weui-label">本机地址</label></div>
-								<div class="weui-cell__bd weui-flex"><button onclick="fileToApi(1); return false;"
-										class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">使用</button>
-								</div>
+								<div class="weui-cell__bd weui-flex"><button onclick="fileToApi(1);return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">使用</button></div>
 							</div>
 							<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
-								<div class="weui-cell__bd weui-flex">
-									<input id="fileUrl1" class="weui-input weui-cell__control weui-cell__control_flex"
-										type="text" value="" readonly />
-
-								</div>
+								<div class="weui-cell__bd weui-flex"><input id="fileUrl1" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" readonly /></div>
 							</div>
 							<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
 								<div class="weui-cell__hd"><label class="weui-label">局域网地址</label></div>
-								<div class="weui-cell__bd weui-flex"><button onclick="fileToApi(2); return false;"
-										class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">使用</button>
-								</div>
+								<div class="weui-cell__bd weui-flex"><button onclick="fileToApi(2);return false;" class="weui-cell__control weui-btn weui-btn_default weui-vcode-btn">使用</button></div>
 							</div>
 							<div class="weui-cell weui-cell_active weui-cell_vcode weui-cell_wrap">
-								<div class="weui-cell__bd weui-flex">
-									<input id="fileUrl2" class="weui-input weui-cell__control weui-cell__control_flex"
-										type="text" value="" readonly />
-
-								</div>
+								<div class="weui-cell__bd weui-flex"><input id="fileUrl2" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" readonly /></div>
 							</div>
 						</div>
 					</div>
@@ -186,91 +266,108 @@
 			<div class="weui-half-screen-dialog__ft" style="padding-bottom: 30px;">
 				<div class="weui-half-screen-dialog__btn-area">
 					<a href="javascript:void(0)" class="weui-btn weui-btn_default" onclick="hideFileInfo()">关闭</a>
-					<a href="javascript:void(0)" id="delFileBtn" class="weui-btn weui-btn_warn"
-						onclick="delFile()">删除文件</a>
+					<a href="javascript:void(0)" id="delFileBtn" class="weui-btn weui-btn_warn" onclick="delFile()">删除文件</a>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<div role="dialog" aria-hidden="true" aria-modal="true" id="uploadTip" style="display: none;">
+	<div id="uploadTip" style="display: none;">
 		<div class="weui-mask"></div>
 		<div class="weui-dialog">
 			<div class="weui-dialog__hd"><strong class="weui-dialog__title">确认上传?</strong></div>
 			<div class="weui-dialog__bd" id="uploadTipContent"></div>
 			<div class="weui-dialog__ft">
-				<a role="button" href="javascript:void(0)" onclick="doUpload(0)"
-					class="weui-dialog__btn weui-dialog__btn_default">取消</a>
-				<a role="button" href="javascript:void(0)" onclick="doUpload(1)"
-					class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+				<a href="javascript:void(0)" onclick="doUpload(0)" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+				<a href="javascript:void(0)" onclick="doUpload(1)" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
 			</div>
 		</div>
 	</div>
-
-	<div role="dialog" aria-hidden="true" aria-modal="true" id="newFolder" style="display: none;">
+	<div id="newFolder" style="display: none;">
 		<div class="weui-mask"></div>
 		<div class="weui-dialog">
 			<div class="weui-dialog__hd"><strong class="weui-dialog__title">新建文件夹</strong></div>
-			<div class="weui-dialog__bd">
-				<input id="newFolderContent" class="weui-input weui-cell__control weui-cell__control_flex" type="text"
-					value="" placeholder="请输入文件夹名称..." />
-			</div>
+			<div class="weui-dialog__bd"><input id="newFolderContent" class="weui-input weui-cell__control weui-cell__control_flex" type="text" value="" placeholder="请输入文件夹名称..." /></div>
 			<div class="weui-dialog__ft">
-				<a role="button" href="javascript:void(0)" onclick="doNewFolder(0)"
-					class="weui-dialog__btn weui-dialog__btn_default">取消</a>
-				<a role="button" href="javascript:void(0)" onclick="doNewFolder(1)"
-					class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+				<a href="javascript:void(0)" onclick="doNewFolder(0)" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+				<a href="javascript:void(0)" onclick="doNewFolder(1)" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
 			</div>
 		</div>
 	</div>
-
-	<div role="dialog" aria-hidden="true" aria-modal="true" id="delFolder" style="display: none;">
+	<div id="delFolder" style="display: none;">
 		<div class="weui-mask"></div>
 		<div class="weui-dialog">
 			<div class="weui-dialog__hd"><strong class="weui-dialog__title">删除文件夹</strong></div>
 			<div class="weui-dialog__bd" id="delFolderContent"></div>
 			<div class="weui-dialog__ft">
-				<a role="button" href="javascript:void(0)" onclick="doDelFolder(0)"
-					class="weui-dialog__btn weui-dialog__btn_default">取消</a>
-				<a role="button" href="javascript:void(0)" onclick="doDelFolder(1)"
-					class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+				<a href="javascript:void(0)" onclick="doDelFolder(0)" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+				<a href="javascript:void(0)" onclick="doDelFolder(1)" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
 			</div>
 		</div>
 	</div>
-
-	<div role="dialog" aria-hidden="true" aria-modal="true" id="delFile" style="display: none;">
+	<div id="delFile" style="display: none;">
 		<div class="weui-mask"></div>
 		<div class="weui-dialog">
 			<div class="weui-dialog__hd"><strong class="weui-dialog__title">删除文件</strong></div>
 			<div class="weui-dialog__bd" id="delFileContent"></div>
 			<div class="weui-dialog__ft">
-				<a role="button" href="javascript:void(0)" onclick="doDelFile(0)"
-					class="weui-dialog__btn weui-dialog__btn_default">取消</a>
-				<a role="button" href="javascript:void(0)" onclick="doDelFile(1)"
-					class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+				<a href="javascript:void(0)" onclick="doDelFile(0)" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+				<a href="javascript:void(0)" onclick="doDelFile(1)" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
 			</div>
 		</div>
 	</div>
-
-	<div role="alert" id="warnToast" style="display: none;">
+	<div id="warnToast" style="display: none;">
 		<div class="weui-mask_transparent"></div>
-		<div class="weui-toast">
-			<i class="weui-icon-warn weui-icon_toast"></i>
-			<p class="weui-toast__content" id="warnToastContent"></p>
-		</div>
+		<div class="weui-toast"><i class="weui-icon-warn weui-icon_toast"></i><p class="weui-toast__content" id="warnToastContent"></p></div>
 	</div>
-
-	<div role="alert" id="loadingToast" style="display: none;">
+	<div id="loadingToast" style="display: none;">
 		<div class="weui-mask_transparent"></div>
-		<div class="weui-toast">
-			<span class="weui-primary-loading weui-icon_toast">
-				<span class="weui-primary-loading__dot"></span>
-			</span>
-			<p class="weui-toast__content">加载中</p>
-		</div>
+		<div class="weui-toast"><span class="weui-primary-loading weui-icon_toast"><span class="weui-primary-loading__dot"></span></span><p class="weui-toast__content">加载中</p></div>
 	</div>
-	<script src="jquery.js"></script>
-	<script src="script.js"></script>
+	<script>
+// TinyTV TV版 - 原生JavaScript实现
+function $(s){return document.querySelector(s)}
+function $$(s){return document.querySelectorAll(s)}
+function show(e){if(typeof e==='string')e=$(e);if(e)e.style.display='block'}
+function hide(e){if(typeof e==='string')e=$(e);if(e)e.style.display='none'}
+function val(e,v){if(typeof e==='string')e=$(e);if(e){if(v!==undefined)e.value=v;return e.value}return ''}
+function html(e,c){if(typeof e==='string')e=$(e);if(e){if(c!==undefined)e.innerHTML=c;return e.innerHTML}return ''}
+function addClass(e,c){if(typeof e==='string')e=$(e);if(e)e.classList.add(c)}
+function removeClass(e,c){if(typeof e==='string')e=$(e);if(e)e.classList.remove(c)}
+function attr(e,n,v){if(typeof e==='string')e=$(e);if(e){if(v!==undefined)e.setAttribute(n,v);return e.getAttribute(n)}return null}
+function post(u,d,cb){fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:Object.keys(d).map(k=>k+'='+encodeURIComponent(d[k])).join('&')}).then(r=>r.text()).then(cb).catch(console.error)}
+function get(u,cb,err){fetch(u).then(r=>r.text()).then(cb).catch(err||console.error)}
+function ajaxUpload(u,fd,cb){fetch(u,{method:'POST',body:fd}).then(r=>r.text()).then(cb).catch(cb)}
+function search(){doAction('search',{word:val('#search_key_word')})}
+function api(){doAction('api',{url:val('#diy_api_url')})}
+function live(){doAction('live',{url:val('#diy_live_url')})}
+function epg(){doAction('epg',{url:val('#diy_epg_url')})}
+function proxys(){doAction('proxys',{url:val('#diy_proxy_server')})}
+function push(){doAction('push',{url:val('#push_url')})}
+function doAction(a,kv){kv['do']=a;post('/action',kv,d=>console.log(d));return false}
+const ic_dir='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA7AAAAOwBeShxvQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIoSURBVFiF7Ze/T9RgGMc/T9/WO+74IXdRNKCJxETPQaOJi8LoxiouTurmv+DAYvwH3JzVhOhgSHByMTqY6GBCCBFMcJFwURC4O1rbvo8DoIg9rvHuYOGTdGjfb/J88vZpn1Z0bKw7JjsiaCcJqMiCKQ1OyuhonLTeLG5MZlLQq/UCooqd/nwfuNcOAUfgSorcbR0fN20RACRF7hgzc0PtEJB47IGmCSq8EXjbOKjG+VG54Buv531puK/WkfO2L0cY+ZI5ksVfD84vTt91U5vCEBvH7qxU0GqV18PX+Xg2+e6GFmZXhPlc3zOX5dW0Do2xMbIeEBuXmVMX68Y8BwxQzhXFlWqtdQKbzA+cIch0pMq630vgX55DTJgY+Bn18ql8hyAqphb4VjjeMLPVeG722nOKztddw0EPTARPUws0ohqB3TRw8w2KAwyaCRara/i2u+niCqxHf85TPQWe+Jw2L3kX3GhaYCdip5xU74FV28dSPNB8QZR8VEbCiCe1h+kFWopCVLH42oWz58Xh98s/y9o+CWzjQOBA4EBg3wX+mgWxdwlrTtSJRrjBK0T99glUC49R52jdcG75Fp7/on0C4BGGIeWFMtsHRL4zT2/hMCoerebfHkgYTWm+2/+XHTsQ4h3y6D/ZnxgWjRKvt0wgv3QTa+rN/I0mbDVipxxLe3c5kWjNgqIOSOO/nRajMVu99kF0hi4iM4LQtSfVrWbigHMa21k35NEvWSq4Cnb1Ay8AAAAASUVORK5CYII=';
+const ic_file='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA7AAAAOwBeShxvQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJdSURBVFiF7ZfLaxNRFMa/c+8MbZO0xAgmGIIxUmtsQCkobsSNO12I7v0PXAjuBDeCCN0I/gvdu3HhQlHBBwouTA1UUoulKXmYSDp59TEzx4XUpmFm0tsMTRd+u5l7uN9vvnvunRmCh+r1+km2+CWAlFedm5byP79PIHRx8tKk4VYjvCawTfvafs0BoN1qThWNYn7h3cK4EgDPI23P07Ox5pM7+zXfVqPRPFbulPO517nQngBmv3JwkwIPQXQDXDs9KAAANI1WtLpVXcx9yEU8AWY/WU95nRvL1tVbfhgLKXcgGq1oZe3XajabPdJdo3VfMOg2AAL7YQ8kUyewIiQs0wQAbG5sjHbqnUUARx0BAMi/IP4oEAxganpnFcuFEggU7q7x3AUHoaED9C6Bp5gZlmUpGQgSENL9OR0B2KUJCssFFAslJQAShPMXzkHX9b0DuCmRTCCRTCgB9JPzSeirhbeUEjDqBgyjoWQgiBCLxyCEcx8494DLZLZtwzbVmpAFeUaqlEA4EkY4Eu5fqKBDeg64bsNVVEoVJQMCITOTga47WznfJefJ4onjiMWjygBSk67jSgcRCYImlNqmr4beA0M/iP4ncDgT+BfBAUThmQDbpv+OPZ+8ngBa+xWEWfbFt9PqgJmh6/r7XR5OxduIkpcw9uMsWE4MZM7QMKoFq2uBF2dS6VO1vgArWzPIjDwHSUCOA2DXf0sFit9z6XS61nu7F8AEgLfrD/CtfQUhWR3YNzZS+ngzdPc+ps03TuO7Xjuzn61HzHQPDL1pAvaAu4AZJYvo+uPL9MWt5g/5NsVsHsMO8wAAAABJRU5ErkJggg==';
+let current_root='',current_parent='',current_remote='',current_file='';
+function tpl_top(p){return'<a class="weui-cell weui-cell_access" href="javascript:void(0)" onclick="listFile(\''+p+'\')"><div class="weui-cell__hd"><img src="'+ic_dir+'" style="width:32px;margin-right:16px;display:block;"></div><span class="weui-cell__bd"><span>..</span></span></a>'}
+function tpl_dir(n,t,p){return'<a class="weui-cell weui-cell_access" href="#" onclick="listFile(\''+p+'\')"><div class="weui-cell__hd"><img src="'+ic_dir+'" style="width:32px;margin-right:16px;display:block;"></div><span class="weui-cell__bd"><span>'+n+'</span><div class="weui-cell__desc">'+t+'</div></span></a>'}
+function tpl_file(n,t,p,d){return'<a class="weui-cell weui-cell_access" href="javascript:void(0)" onclick="selectFile(\''+p+'\','+d+')"><div class="weui-cell__hd"><img src="'+ic_file+'" style="width:32px;margin-right:16px;display:block;"></div><span class="weui-cell__bd"><span>'+n+'</span><div class="weui-cell__desc">'+t+'</div></span></a>'}
+function clear_list(){html('#file_list','')}
+function add_file(n){const e=$('#file_list');if(e)e.insertAdjacentHTML('beforeend',n)}
+function selectFile(p,d){current_file=p;const b=$('#delFileBtn');if(b)b.style.display=d?'inline-block':'none';const u1=$('#fileUrl1'),u2=$('#fileUrl2');if(u1)u1.value='clan://localhost/'+current_file;if(u2)u2.value=current_remote+current_file;show('#fileInfoDialog')}
+function fileToApi(t){doAction('api',{url:t===1?'clan://localhost/'+current_file:current_remote+current_file})}
+function hideFileInfo(){hide('#fileInfoDialog')}
+function listFile(p){show('#loadingToast');get('/file/'+p,function(r){const i=JSON.parse(r),parent=i.parent,canDel=i.del===1;current_root=p;current_parent=parent;current_remote=i.remote;const arr=i.files;if(p===''&&arr.length===0)warnToast('读取本地文件失败，可能没有存储权限');clear_list();if(parent!=='.')add_file(tpl_top(parent));const dcf=$('#delCurFolder');if(dcf)dcf.style.display=canDel?'inline-block':'none';arr.forEach(function(n){add_file(n.dir===1?tpl_dir(n.name,n.time,n.path):tpl_file(n.name,n.time,n.path,canDel))});hide('#loadingToast')},function(){warnToast('读取本地文件失败，可能没有存储权限');hide('#loadingToast')})}
+function warnToast(m){html('#warnToastContent',m);show('#warnToast');setTimeout(function(){hide('#warnToast')},1000)}
+function uploadFile(){const u=$('#file_uploader');if(u){u.value='';u.click()}}
+function uploadTip(){const u=$('#file_uploader');if(!u||!u.files||u.files.length<=0)return false;let t='';for(let i=0;i<u.files.length;i++)t+=u.files[i].name+',';html('#uploadTipContent',t);show('#uploadTip')}
+function doUpload(y){hide('#uploadTip');if(y==1){const u=$('#file_uploader');if(!u||!u.files||u.files.length<=0)return false;const fd=new FormData();fd.append('path',current_root);for(let i=0;i<u.files.length;i++)fd.append('files-'+i,u.files[i]);show('#loadingToast');ajaxUpload('/upload',fd,function(){hide('#loadingToast');listFile(current_root)})}}
+function newFolder(){show('#newFolder')}
+function doNewFolder(y){hide('#newFolder');if(y==1){const n=$('#newFolderContent');if(!n)return false;const name=n.value.trim();if(name.length<=0)return false;show('#loadingToast');post('/newFolder',{path:current_root,name:name},function(){hide('#loadingToast');listFile(current_root)})}}
+function delFolder(){html('#delFolderContent','是否删除 '+current_root);show('#delFolder')}
+function doDelFolder(y){hide('#delFolder');if(y==1){show('#loadingToast');post('/delFolder',{path:current_root},function(){hide('#loadingToast');listFile(current_parent)})}}
+function delFile(){hideFileInfo();html('#delFileContent','是否删除 '+current_file);show('#delFile')}
+function doDelFile(y){hide('#delFile');if(y==1){show('#loadingToast');post('/delFile',{path:current_file},function(){hide('#loadingToast');listFile(current_root)})}}
+function showPanel(id){const tab=$('#tab'+id);if(!tab)return;attr(tab,'aria-selected','true');addClass(tab,'weui-bar__item_on');$$('.weui-tabbar__item').forEach(function(s){if(s!==tab){attr(s,'aria-selected','false');removeClass(s,'weui-bar__item_on')}});const panel=$('#'+attr(tab,'aria-controls'));if(id===3&&current_remote.length===0)listFile('');if(panel){panel.style.display='block';$$('.weui-tab__panel').forEach(function(p){if(p!==panel)p.style.display='none'})}}
+document.addEventListener('DOMContentLoaded',function(){$$('.weui-tabbar__item').forEach(function(i){i.addEventListener('click',function(){showPanel(parseInt(this.id.substr(3)))})});const u=window.location.href;if(u.indexOf('push.html')>0)showPanel(2);else if(u.indexOf('api.html')>0||u.indexOf('all.html')>0)showPanel(3);else showPanel(1)});
+	</script>
 </body>
-
 </html>
