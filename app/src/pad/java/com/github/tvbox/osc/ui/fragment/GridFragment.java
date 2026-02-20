@@ -1,12 +1,18 @@
 package com.github.tvbox.osc.ui.fragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.GsonUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
@@ -18,7 +24,6 @@ import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.ui.activity.DetailActivity;
 import com.github.tvbox.osc.ui.activity.FastSearchActivity;
-import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.github.tvbox.osc.ui.adapter.GridAdapter;
 import com.github.tvbox.osc.ui.dialog.GridFilterDialog;
 import com.github.tvbox.osc.ui.tv.widget.LoadMoreView;
@@ -42,7 +47,7 @@ import org.greenrobot.eventbus.EventBus;
  */
 public class GridFragment extends BaseLazyFragment {
     private MovieSort.SortData sortData = null;
-    private TvRecyclerView mGridView;
+    private RecyclerView mGridView;
     private SourceViewModel sourceViewModel;
     private GridFilterDialog gridFilterDialog;
     private GridAdapter gridAdapter;
@@ -53,7 +58,7 @@ public class GridFragment extends BaseLazyFragment {
     private View focusedView = null;
     private class GridInfo{
         public String sortID="";
-        public TvRecyclerView mGridView;
+        public RecyclerView mGridView;
         public GridAdapter gridAdapter;
         public int page = 1;
         public int maxPage = 1;
@@ -77,13 +82,28 @@ public class GridFragment extends BaseLazyFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null && this.sortData == null) {
+            //activity销毁再进入,会直接恢复fragment,从而直接getList,导致sortData为空闪退
+            this.sortData = GsonUtils.fromJson(savedInstanceState.getString("sortDataJson"), MovieSort.SortData.class);
+        }
+    }
+
+    @Override
     protected void init() {
         initView();
         initViewModel();
         initData();
     }
 
-    private void changeView(String id,Boolean isFolder){
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("sortDataJson", GsonUtils.toJson(sortData));
+    }
+
+    private void changeView(String id, Boolean isFolder){
         if(isFolder){
             this.sortData.flag ="1"; // 修改sortData.flag
         }else {
@@ -94,7 +114,6 @@ public class GridFragment extends BaseLazyFragment {
         initViewModel();
         initData();
     }
-    public boolean isFolederMode(){ return (getUITag() =='1'); }
     // 获取当前页面UI的显示模式 ‘0’ 正常模式 '1' 文件夹模式 '2' 显示缩略图的文件夹模式
     public char getUITag(){
         System.out.println(sortData);
@@ -150,7 +169,7 @@ public class GridFragment extends BaseLazyFragment {
             mGridView.setVisibility(View.VISIBLE);
         }
         mGridView.setHasFixedSize(true);
-        gridAdapter = new GridAdapter(isFolederMode());
+        gridAdapter = new GridAdapter();
         this.page =1;
         this.maxPage =1;
         this.isLoad = false;
@@ -159,11 +178,7 @@ public class GridFragment extends BaseLazyFragment {
     private void initView() {
         this.createView();
         mGridView.setAdapter(gridAdapter);
-        if(isFolederMode()){
-            mGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 1, false));
-        }else{
-            mGridView.setLayoutManager(new V7GridLayoutManager(this.mContext, isBaseOnWidth() ? 5 : 6));
-        }
+        mGridView.setLayoutManager(new V7GridLayoutManager(this.mContext, 4));
 
         gridAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
@@ -172,30 +187,6 @@ public class GridFragment extends BaseLazyFragment {
                 sourceViewModel.getList(sortData, page);
             }
         }, mGridView);
-        mGridView.setOnItemListener(new TvRecyclerView.OnItemListener() {
-            @Override
-            public void onItemPreSelected(TvRecyclerView parent, View itemView, int position) {
-                itemView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
-            }
-
-            @Override
-            public void onItemSelected(TvRecyclerView parent, View itemView, int position) {
-                itemView.animate().scaleX(1.05f).scaleY(1.05f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
-            }
-
-            @Override
-            public void onItemClick(TvRecyclerView parent, View itemView, int position) {
-
-            }
-        });
-        mGridView.setOnInBorderKeyEventListener(new TvRecyclerView.OnInBorderKeyEventListener() {
-            @Override
-            public boolean onInBorderKeyEvent(int direction, View focused) {
-                if (direction == View.FOCUS_UP) {
-                }
-                return false;
-            }
-        });
         gridAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -214,8 +205,9 @@ public class GridFragment extends BaseLazyFragment {
                     else if(homeSourceBean.isQuickSearch() && Hawk.get(HawkConfig.FAST_SEARCH_MODE, false) && enableFastSearch()){
                         jumpActivity(FastSearchActivity.class, bundle);
                     }else{
-                        if(video.id == null || video.id.isEmpty() || video.id.startsWith("msearch:")){
-                            jumpActivity(SearchActivity.class, bundle);
+                        if(TextUtils.isEmpty(video.id) || video.id.startsWith("msearch:")){
+                            jumpActivity(FastSearchActivity.class, bundle);
+//                            jumpActivity(SearchActivity.class, bundle);
                         }else {
                             jumpActivity(DetailActivity.class, bundle);
                         }
@@ -240,6 +232,8 @@ public class GridFragment extends BaseLazyFragment {
             }
         });
         gridAdapter.setLoadMoreView(new LoadMoreView());
+
+        findViewById(R.id.btn_filter).setOnClickListener(view -> showFilter());
         setLoadSir2(mGridView);
     }
 
@@ -287,18 +281,14 @@ public class GridFragment extends BaseLazyFragment {
     }
 
     private void initData() {
+        if (ApiConfig.get().getHomeSourceBean().getApi()==null){// 系统杀死app恢复缓存的fragment后会直接getList,此时首页api都未加载完
+            showEmpty();
+            return;
+        }
         showLoading();
         isLoad = false;
         scrollTop();
-        toggleFilterColor();
         sourceViewModel.getList(sortData, page);
-    }
-
-    private void toggleFilterColor() {
-        if (sortData.filters != null && !sortData.filters.isEmpty()) {
-            int count = sortData.filterSelectCount();
-            EventBus.getDefault().post(new RefreshEvent(RefreshEvent.TYPE_FILTER_CHANGE, count));
-        }
     }
 
     public boolean isTop() {
@@ -311,7 +301,7 @@ public class GridFragment extends BaseLazyFragment {
     }
 
     public void showFilter() {
-        if (!sortData.filters.isEmpty() && gridFilterDialog == null) {
+        if (sortData!=null && !sortData.filters.isEmpty() && gridFilterDialog == null) {
             gridFilterDialog = new GridFilterDialog(mContext);
             gridFilterDialog.setData(sortData);
             gridFilterDialog.setOnDismiss(new GridFilterDialog.Callback() {
