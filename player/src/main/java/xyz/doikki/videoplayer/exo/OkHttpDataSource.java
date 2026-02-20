@@ -15,26 +15,25 @@
  */
 package xyz.doikki.videoplayer.exo;
 
-import static com.google.android.exoplayer2.upstream.HttpUtil.buildRangeRequestHeader;
-import static com.google.android.exoplayer2.util.Util.castNonNull;
+import static androidx.media3.datasource.HttpUtil.buildRangeRequestHeader;
+import static androidx.media3.common.util.Util.castNonNull;
 import static java.lang.Math.min;
 
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.upstream.BaseDataSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DataSourceException;
-import com.google.android.exoplayer2.upstream.DataSpec;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
-import com.google.android.exoplayer2.upstream.HttpUtil;
-import com.google.android.exoplayer2.upstream.TransferListener;
-import com.google.android.exoplayer2.util.Assertions;
-import com.google.android.exoplayer2.util.Util;
+import androidx.media3.common.C;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.datasource.BaseDataSource;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DataSourceException;
+import androidx.media3.datasource.DataSpec;
+import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.datasource.HttpUtil;
+import androidx.media3.datasource.TransferListener;
+import androidx.media3.common.util.Assertions;
+import androidx.media3.common.util.Util;
 import com.google.common.base.Predicate;
 import com.google.common.net.HttpHeaders;
 
@@ -60,14 +59,10 @@ import okhttp3.ResponseBody;
  * An {@link HttpDataSource} that delegates to Square's {@link Call.Factory}.
  *
  * <p>Note: HTTP request headers will be set using all parameters passed via (in order of decreasing
- * priority) the {@code dataSpec}, {@link #setRequestProperty} and the default parameters used to
+ * priority) {@code dataSpec}, {@link #setRequestProperty} and default parameters used to
  * construct the instance.
  */
 public class OkHttpDataSource extends BaseDataSource implements HttpDataSource {
-
-    static {
-        ExoPlayerLibraryInfo.registerModule("goog.exo.okhttp");
-    }
 
     /** {@link DataSource.Factory} for {@link OkHttpDataSource} instances. */
     public static final class Factory implements HttpDataSource.Factory {
@@ -83,7 +78,7 @@ public class OkHttpDataSource extends BaseDataSource implements HttpDataSource {
         /**
          * Creates an instance.
          *
-         * @param callFactory A {@link Call.Factory} (typically an {@link OkHttpClient}) for use by the
+         * @param callFactory A {@link Call.Factory} (typically an {@link OkHttpClient}) for use by
          *     sources created by the factory.
          */
         public Factory(Call.Factory callFactory) {
@@ -333,7 +328,7 @@ public class OkHttpDataSource extends BaseDataSource implements HttpDataSource {
         // requested position.
         long bytesToSkip = responseCode == 200 && dataSpec.position != 0 ? dataSpec.position : 0;
 
-        // Determine the length of the data to be read, after skipping.
+        // Determine the length of data to be read, after skipping.
         if (dataSpec.length != C.LENGTH_UNSET) {
             bytesToRead = dataSpec.length;
         } else {
@@ -473,8 +468,8 @@ public class OkHttpDataSource extends BaseDataSource implements HttpDataSource {
      * Reads up to {@code length} bytes of data and stores them into {@code buffer}, starting at index
      * {@code offset}.
      *
-     * <p>This method blocks until at least one byte of data can be read, the end of the opened range
-     * is detected, or an exception is thrown.
+     * <p>This method blocks until at least one byte of data can be read, the end of the opened
+     * range is detected, or an exception is thrown.
      *
      * @param buffer The buffer into which the read data should be stored.
      * @param offset The start offset into {@code buffer} at which data should be written.

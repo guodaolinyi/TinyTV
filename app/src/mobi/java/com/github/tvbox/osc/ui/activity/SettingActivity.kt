@@ -161,7 +161,8 @@ class SettingActivity : BaseVbActivity<ActivitySettingBinding>() {
                     mBinding.tvDns.text = OkGoHelper.dnsHttpsList[pos]
                     Hawk.put(HawkConfig.DOH_URL, pos)
                     val url = OkGoHelper.getDohUrl(pos)
-                    OkGoHelper.dnsOverHttps.setUrl(if (url.isEmpty()) null else HttpUrl.get(url))
+                    val httpUrl: okhttp3.HttpUrl? = if (url.isEmpty()) null else com.github.tvbox.osc.util.HttpUrlUtil.parse(url)
+                    OkGoHelper.dnsOverHttps.setUrl(httpUrl)
                     IjkMediaPlayer.toggleDotPort(pos > 0)
                 }
 

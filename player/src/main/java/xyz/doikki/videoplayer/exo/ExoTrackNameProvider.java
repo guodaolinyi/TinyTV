@@ -8,11 +8,11 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import com.github.tvbox.osc.player.R;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.util.Assertions;
-import com.google.android.exoplayer2.util.MimeTypes;
-import com.google.android.exoplayer2.util.Util;
+import androidx.media3.common.C;
+import androidx.media3.common.Format;
+import androidx.media3.common.util.Assertions;
+import androidx.media3.common.MimeTypes;
+import androidx.media3.common.util.Util;
 
 
 import java.util.Locale;
@@ -106,12 +106,12 @@ public class ExoTrackNameProvider {
             return "";
         }
         try {
-            // Capitalize the first letter. See: https://github.com/google/ExoPlayer/issues/9452.
+            // Capitalize first letter. See: https://github.com/google/ExoPlayer/issues/9452.
             int firstCodePointLength = languageName.offsetByCodePoints(0, 1);
             return languageName.substring(0, firstCodePointLength).toUpperCase(displayLocale)
                     + languageName.substring(firstCodePointLength);
         } catch (IndexOutOfBoundsException e) {
-            // Should never happen, but return the unmodified language name if it does.
+            // Should never happen, but return unmodified language name if it does.
             return languageName;
         }
     }

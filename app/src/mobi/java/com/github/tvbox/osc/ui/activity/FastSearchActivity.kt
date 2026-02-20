@@ -269,8 +269,8 @@ class FastSearchActivity : BaseVbActivity<ActivityFastSearchBinding>(), TextWatc
                         try {
                             val hots = ArrayList<String>()
                             val itemList =
-                                JsonParser.parseString(response.body()).asJsonObject["data"].asJsonObject["mapResult"].asJsonObject["0"].asJsonObject["listInfo"].asJsonArray
-                            //                            JsonArray itemList = JsonParser.parseString(response.body()).getAsJsonObject().get("data").getAsJsonArray();
+                                JsonParser.parseString(response.body()!!).asJsonObject["data"].asJsonObject["mapResult"].asJsonObject["0"].asJsonObject["listInfo"].asJsonArray
+                            //                            JsonArray itemList = JsonParser.parseString(response.body()!!).getAsJsonObject().get("data").getAsJsonArray();
                             for (ele: JsonElement in itemList) {
                                 val obj = ele as JsonObject
                                 hots.add(obj["title"].asString.trim { it <= ' ' }
@@ -304,7 +304,8 @@ class FastSearchActivity : BaseVbActivity<ActivityFastSearchBinding>(), TextWatc
 
                     @Throws(Throwable::class)
                     override fun convertResponse(response: Response): String {
-                        return response.body()!!.string()
+                        val responseBody = response.body
+                        return responseBody!!.string()
                     }
                 })
         }
@@ -319,7 +320,7 @@ class FastSearchActivity : BaseVbActivity<ActivityFastSearchBinding>(), TextWatc
                 override fun onSuccess(response: com.lzy.okgo.model.Response<String?>) {
                     val titles: MutableList<String> = ArrayList()
                     try {
-                        val json = JsonParser.parseString(response.body()).asJsonObject
+                        val json = JsonParser.parseString(response.body()!!).asJsonObject
                         val datas = json["data"].asJsonArray
                         for (data: JsonElement in datas) {
                             val item = data as JsonObject
@@ -335,7 +336,8 @@ class FastSearchActivity : BaseVbActivity<ActivityFastSearchBinding>(), TextWatc
 
                 @Throws(Throwable::class)
                 override fun convertResponse(response: Response): String {
-                    return response.body()!!.string()
+                    val responseBody = response.body
+                    return responseBody!!.string()
                 }
             })
     }
