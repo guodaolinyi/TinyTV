@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context=".ui.activity.SubscriptionActivity">
+    tools:context="com.tinywo.tinytv.activity.SubscriptionActivity">
 
     <com.hjq.bar.TitleBar
         android:id="@+id/title_bar"

@@ -25,7 +25,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name=".base.App"
+        android:name="com.tinywo.tinytv.base.App"
         android:allowBackup="true"
         android:configChanges="orientation|keyboardHidden|screenSize"
         android:hardwareAccelerated="true"
@@ -36,7 +36,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.activity.SplashActivity"
+            android:name="com.tinywo.tinytv.activity.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -46,46 +46,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.SubscriptionActivity"
+            android:name=".activity.SubscriptionActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.VideoListActivity"
+            android:name=".activity.VideoListActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
-            android:name=".ui.activity.MovieFoldersActivity"
+            android:name=".activity.MovieFoldersActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"/>
         <activity
-            android:name=".ui.activity.LocalPlayActivity"
+            android:name=".activity.LocalPlayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
             android:exported="true"/>
         <activity
-            android:name=".ui.activity.LiveActivity"
+            android:name=".activity.LiveActivity"
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode|screenLayout"/>
         <activity
-            android:name=".ui.activity.DetailActivity"
+            android:name=".activity.DetailActivity"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode"/>
         <activity
-            android:name=".ui.activity.FastSearchActivity"
+            android:name=".activity.FastSearchActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             />
         <activity
-            android:name=".ui.activity.SettingActivity"
+            android:name=".activity.SettingActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity
-            android:name=".ui.activity.HistoryActivity"
+            android:name=".activity.HistoryActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".ui.activity.CollectActivity"
+            android:name=".activity.CollectActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <service android:name="com.android.cast.dlna.dmc.DLNACastService"/>
