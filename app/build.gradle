@@ -25,7 +25,7 @@ android {
         }
 
     }
-
+ 
     // 执行配置
     applicationVariants.all { variant ->
 
@@ -69,16 +69,16 @@ android {
     }
     sourceSets {
         mobi {
-            java.srcDirs = ['src/mobi/java']
-            res.srcDirs = ['src/mobi/res']
+            java.srcDirs = ['src/main/java', 'src/mobi/java']
+            res.srcDirs = ['src/main/res', 'src/mobi/res']
         }
         tv {
-            java.srcDirs = ['src/tv/java']
-            res.srcDirs = ['src/tv/res']
+            java.srcDirs = ['src/main/java', 'src/tv/java']
+            res.srcDirs = ['src/main/res', 'src/tv/res']
         }
         pad {
-            java.srcDirs = ['src/pad/java']
-            res.srcDirs = ['src/pad/res']
+            java.srcDirs = ['src/main/java', 'src/pad/java']
+            res.srcDirs = ['src/main/res', 'src/pad/res']
         }
     }
 

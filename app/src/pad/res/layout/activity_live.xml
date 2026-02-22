@@ -81,7 +81,7 @@
 			android:layout_marginRight="@dimen/dp_5"
 			android:gravity="center"
 			android:orientation="vertical">
-			<com.github.tvbox.osc.ui.tv.widget.MarqueeTextView
+			<com.tinywo.tinytv.tv.widget.MarqueeTextView
 				android:id="@+id/tv_channel_bar_name"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
